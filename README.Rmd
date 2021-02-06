@@ -1,0 +1,61 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# FWHT
+
+A very simple, purely **R** based implementation of the Fast Walsh-Hadamard algorithm. 
+I found many implementations on the internet, but felt that all of them were quite opaque - 
+I chose to re-implement the algorithm using a more functional style (recursion). 
+I recognize that this is probably slower than the usual in-place rotation (that most people 
+seem to be using), especially with **R**s lack of tail-call optimization. Nonetheless, I think the implementation 
+is quite illustrative, and simple. 
+
+The implementation boils down to: 
+```{r}
+fwht <- function( x )
+{
+  if(length(x) == 1) return(x) 
+  upper = x[1:(length(x)/2)]
+  lower = x[((length(x)/2)+1):length(x)]
+
+  a = upper + lower
+  b = -lower + upper
+
+  return(c(fwht(a),fwht(b)))
+}
+
+fwht( c(1,0,1,0,0,1,1,0) )
+
+fwht(c(1,0,0,1))
+
+```
+Note that this does no normalization nor sequency ordering. 
+
+I benchmark this against the 'naive' approach of multiplying by a Hadamard matrix. 
+I also benchmark (both approaches) against the naive approach using memoisation 
+implemented via 'memoise'. I think such comparison is interesting because there 
+are cases where memoisation **IS** faster than using the algorithm above (though not by much).
+
+```{r,echo = FALSE}
+source("./fwht.R")
+```
+
+```{r, echo = FALSE}
+ggplot2::ggplot(df, ggplot2::aes(x = Order, y = Timing, color = Algorithm)) + 
+  ggplot2::geom_line() +
+  ggplot2::ggtitle("Timing of different algorithms for the Walsh-Hadamard transform", subtitle = "Order is the size of the generated vector, as a power of 2")
+```
+
+Note that the whole benchmark and implementation is contained in **fwht.R**
+
+
