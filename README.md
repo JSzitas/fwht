@@ -51,3 +51,26 @@ comparison is interesting because there are cases where memoisation
 
 Note that the whole benchmark and implementation is contained in
 **fwht.R**
+
+## Vs Rcpp/C++
+
+I felt an itch to compare the performance against a C++ implementation.
+I rewrote the algorithm using the awesome **Eigen** library, but kept to
+the spirit of the original implementation (simple recursion, no evil
+pointer magic or bit hacks).
+
+The results show that doing this does not add very much - there is a
+speedup, even a statistically significant one, but not a several fold
+speedup.
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+The C++ code is hidden in **fwht\_cpp.cpp**, and should compile right
+away using **Rcpp::sourceCpp()**, the comparison benchmark is in
+**cpp\_test.R**, which is mostly a copy of **fwht.R**, primarily to be
+runnable “as is”.
+
+(**NOTE**: For the C++ code, you will need Rcpp and RcppEigen (and
+obviously a C++ compiler). Nonetheless, there is no actual Rcpp class or
+method used, so the code should compile elsewhere with Eigen being the
+only dependency. )
